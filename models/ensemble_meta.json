@@ -1,0 +1,24 @@
+{
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "files": [
+    "lstm_demand_model_ens_s42.keras",
+    "lstm_demand_model_ens_s43.keras",
+    "lstm_demand_model_ens_s44.keras",
+    "lstm_demand_model_ens_s45.keras",
+    "lstm_demand_model_ens_s46.keras"
+  ],
+  "meta_files": [
+    "model_meta_ens_s42.json",
+    "model_meta_ens_s43.json",
+    "model_meta_ens_s44.json",
+    "model_meta_ens_s45.json",
+    "model_meta_ens_s46.json"
+  ],
+  "combine": "mean of the member forecasts in original units"
+}

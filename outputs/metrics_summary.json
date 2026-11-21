@@ -1,0 +1,73 @@
+{
+  "test": {
+    "hybrid": {
+      "n": 2944,
+      "MAE": 16244.0988,
+      "RMSE": 54911.4198,
+      "MAPE": 12.5786,
+      "MAPE_coverage_pct": 100.0,
+      "WAPE": 8.6304,
+      "sMAPE": 13.54,
+      "bias": -10635.7474
+    },
+    "lstm": {
+      "n": 2944,
+      "MAE": 13185.3246,
+      "RMSE": 45327.869,
+      "MAPE": 11.95,
+      "MAPE_coverage_pct": 100.0,
+      "WAPE": 7.0053,
+      "sMAPE": 11.7251,
+      "bias": -3382.3974
+    },
+    "lstm_single": {
+      "n": 2944,
+      "MAE": 13290.5477,
+      "RMSE": 44191.4574,
+      "MAPE": 12.4436,
+      "MAPE_coverage_pct": 100.0,
+      "WAPE": 7.0612,
+      "sMAPE": 12.2002,
+      "bias": -1963.442
+    },
+    "naive": {
+      "n": 2944,
+      "MAE": 14970.812,
+      "RMSE": 45210.664,
+      "MAPE": 13.1388,
+      "MAPE_coverage_pct": 100.0,
+      "WAPE": 7.9539,
+      "sMAPE": 12.3157,
+      "bias": -622.2823
+    },
+    "moving_average": {
+      "n": 2944,
+      "MAE": 11660.7596,
+      "RMSE": 34185.9394,
+      "MAPE": 13.3946,
+      "MAPE_coverage_pct": 100.0,
+      "WAPE": 6.1953,
+      "sMAPE": 11.5013,
+      "bias": -522.2103
+    },
+    "seasonal_naive": {
+      "n": 2944,
+      "MAE": 23833.0339,
+      "RMSE": 74859.0715,
+      "MAPE": 17.8231,
+      "MAPE_coverage_pct": 100.0,
+      "WAPE": 12.6623,
+      "sMAPE": 20.8206,
+      "bias": -17889.0974
+    }
+  },
+  "delivered_model": "hybrid",
+  "seasonal_weight": 0.5,
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ]
+}

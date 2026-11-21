@@ -1,0 +1,15 @@
+{
+  "epochs_run": 18,
+  "best_epoch": 8,
+  "best_val_loss": 0.2358921766281128,
+  "train_loss_at_best": 0.1507013887166977,
+  "best_val_mae_scaled": 0.49355265498161316,
+  "n_train_samples": 4785,
+  "n_val_samples": 736,
+  "n_parameters": 35108,
+  "uses_product_embedding": true,
+  "uses_seasonal_input": false,
+  "target_mode": "level",
+  "model_file": "C:\\Users\\le\\Desktop\\dynamic-pricing-ecommerce\\models\\lstm_demand_model_exp_level.keras",
+  "seed": 42
+}

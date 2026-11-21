@@ -1,0 +1,64 @@
+# Central configuration - no hardcoded paths in the code.
+# All paths are relative to the project root.
+seed: 42
+
+paths:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  models_dir: models
+  outputs_dir: outputs
+  plots_dir: outputs/plots
+
+# Column names CONFIRMED by the Step 1 inspection of train.csv
+data:
+  train_file: train.csv
+  date_col: date
+  product_col: family      # product_id = family (sales summed over all stores)
+  target_col: sales
+  promo_col: onpromotion
+
+# Default values: they will be tuned in Steps 5-6
+forecast:
+  window_size: 12          # previous N weeks used as input
+  horizon: 4               # forecast 1-4 weeks ahead
+  target_mode: delta       # level | delta  (delta = predict the change vs the last week; chosen on validation, Step 6c)
+  season_length: 52        # weeks in a year, used by the seasonal input
+split:
+  val_weeks: 26
+  test_weeks: 26
+
+model:
+  lstm_units: [32, 16]
+  dropout: 0.3
+  learning_rate: 0.001
+  batch_size: 32
+  epochs: 100
+  early_stopping_patience: 10
+  dense_units: 32               # hidden Dense layer before the output (0 = none)
+  use_product_embedding: true   # learn a small vector per product (static information)
+  embedding_dim: 4
+  use_seasonal_input: true      # extra input: what happened one year ago (chosen on validation, Step 6c)
+  loss: huber                   # huber (robust to spikes) or mse
+  reduce_lr_patience: 5
+  reduce_lr_factor: 0.5
+  model_file: lstm_demand_model.keras
+
+# Step 4 - cleaning and weekly aggregation
+preprocessing:
+  min_history_weeks: 104   # products with fewer weekly observations are excluded (and listed)
+  outlier_window: 9        # centred rolling-median window (weeks) used to FLAG extreme weeks
+  outlier_k: 6.0           # flag threshold, in robust standard deviations
+  weekly_file: sales_weekly.csv
+
+# Step 5 - feature engineering (lags and rolling windows are in WEEKS)
+features:
+  lags: [1, 2, 4]
+  rolling_windows: [4, 8]
+
+# Step 7 - evaluation (baselines are computed from the same history as the LSTM)
+evaluation:
+  ma_window: 4        # moving-average baseline: mean of the last N weeks
+  season_length: 52   # seasonal-naive baseline: same week N weeks earlier
+prediction:
+  use_ensemble: true     # متوسط الشبكات الخمس
+  seasonal_weight: 0.5   # 0.5 = هجين (ب) ، 0.0 = LSTM خالص (أ)
