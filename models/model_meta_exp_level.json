@@ -1,0 +1,28 @@
+{
+  "target_mode": "level",
+  "level_idx": 0,
+  "use_product_embedding": true,
+  "use_seasonal_input": false,
+  "window": 12,
+  "horizon": 4,
+  "feature_cols": [
+    "log_sales",
+    "lag_1",
+    "lag_2",
+    "lag_4",
+    "roll_mean_4",
+    "roll_std_4",
+    "roll_mean_8",
+    "roll_std_8",
+    "log_promo",
+    "promo_available",
+    "open_stores",
+    "woy_sin",
+    "woy_cos",
+    "month_sin",
+    "month_cos",
+    "n_holidays",
+    "n_events",
+    "is_christmas_week"
+  ]
+}

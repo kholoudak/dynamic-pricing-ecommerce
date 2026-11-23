@@ -1,0 +1,15 @@
+{
+  "epochs_run": 15,
+  "best_epoch": 5,
+  "best_val_loss": 0.15532422065734863,
+  "train_loss_at_best": 0.16269101202487946,
+  "best_val_mae_scaled": 0.35827741026878357,
+  "n_train_samples": 4785,
+  "n_val_samples": 736,
+  "n_parameters": 35268,
+  "uses_product_embedding": true,
+  "uses_seasonal_input": true,
+  "target_mode": "delta",
+  "model_file": "C:\\Users\\le\\Desktop\\dynamic-pricing-ecommerce\\models\\lstm_demand_model_exp_delta_seasonal.keras",
+  "seed": 42
+}

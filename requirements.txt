@@ -2,3 +2,13 @@ pandas==3.0.6
 numpy==1.26.4
 transformers==4.41.2
 torch==2.3.1
+
+# Agent 1 - LSTM demand forecasting (CPU is enough; GPU optional)
+matplotlib>=3.8
+seaborn>=0.13
+scikit-learn>=1.4
+tensorflow>=2.16
+pyyaml>=6.0
+joblib>=1.3
+jupyter>=1.0
+pytest>=8.0

@@ -1,0 +1,2 @@
+product_id,n_weeks,first_week,last_week,zero_weeks,mean_weekly_sales,zero_weeks_pct
+BOOKS,45,2016-10-03,2017-08-07,0,143.1,0.0

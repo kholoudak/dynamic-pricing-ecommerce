@@ -1,0 +1,15 @@
+{
+  "epochs_run": 31,
+  "best_epoch": 21,
+  "best_val_loss": 0.1458216905593872,
+  "train_loss_at_best": 0.13544195890426636,
+  "best_val_mae_scaled": 0.3446369469165802,
+  "n_train_samples": 4785,
+  "n_val_samples": 736,
+  "n_parameters": 10756,
+  "uses_product_embedding": true,
+  "uses_seasonal_input": true,
+  "target_mode": "delta",
+  "model_file": "C:\\Users\\le\\Desktop\\dynamic-pricing-ecommerce\\models\\lstm_demand_model_ens_s45.keras",
+  "seed": 45
+}
