@@ -29,13 +29,27 @@ rename:
 validation:
   min_reviews_reliable: 30      # reputation scores built on fewer reviews are flagged "low confidence"
 
-# Pricing constraints (used from Phase 4 on).
+# Pricing constraints (Phase 4). Every rule is read from here - nothing is hard-coded in the code.
 constraints:
-  min_margin_pct: 0.10          # price must be >= cost * (1 + 0.10)
-  price_floor_pct_of_current: 0.80
-  price_ceiling_pct_of_current: 1.20
-  max_change_per_update_pct: 0.10
-  default_cost_ratio: null      # if a cost is missing: null = do not recommend a price
+  min_margin_pct: 0.10             # price >= cost * (1 + 0.10)
+  floor_pct_of_current: 0.80       # price floor   = 80% of the current price
+  ceiling_pct_of_current: 1.20     # price ceiling = 120% of the current price
+  max_change_per_update_pct: 0.10  # at most +/-10% versus the previous price, per update
+  min_price: 0.01                  # prices can never be zero or negative
+  on_missing_cost: keep_current    # keep_current = do not change the price | use_default_ratio
+  default_cost_ratio: null         # only if on_missing_cost = use_default_ratio: cost = price * ratio
+
+# Phase 4 - optimizer. ALL numbers below are ASSUMPTIONS (the real data has no prices to estimate them).
+optimizer:
+  n_grid: 201                      # number of candidate prices tested between the lower and upper bound
+  base_elasticity: -3.0            # calibrated: -1 / median margin (0.35) ~ -2.9 (Lerner rule)
+  min_abs_elasticity: 1.2          # elasticity is kept between -1.2 and -6 (below -1 a finite optimum exists)
+  max_abs_elasticity: 6.0
+  gap_sensitivity: 1.0             # more elastic when we are pricier than the competitor
+  reputation_sensitivity: 1.0      # less elastic when reputation is above the reference
+  demand_sensitivity: 0.5          # less elastic when forecast demand is above its recent level
+  reputation_reference: 0.714      # median reputation score of Agent 2's 94 products
+  demand_index_weeks: 12           # recent history used to compute the demand index
 
 # Phase 2 - product mapping. The three datasets describe different businesses, so the links
 # between them are CONSTRUCTED (synthetic), not real. The result is saved in product_mapping.csv:
@@ -43,3 +57,22 @@ constraints:
 mapping:
   seed: 42                      # makes the reputation assignment reproducible
   type_label: synthetic         # written in the mapping file so nobody mistakes it for real data
+
+# Phase 3 - regression
+regression:
+  test_fraction: 0.30            # last 30% of the weeks are held out (chronological, never shuffled)
+  n_cv_splits: 4                 # expanding-window temporal cross-validation
+  vif_threshold: 10              # max VIF above this => multicollinearity => use Ridge
+  ridge_alphas: [0.01, 0.1, 1, 10, 100]
+  synthetic:                     # parameters of the SIMULATED price experiment (known truth)
+    seed: 42
+    n_weeks: 104
+    true_elasticity: -1.8
+    true_competitor_effect: 0.6
+    true_reputation_effect: 0.5
+    price_noise_sd: 0.08         # weekly random price changes (+/- 8%)
+    competitor_follow: 0.6       # how strongly the competitor price follows ours (collinearity)
+    competitor_noise_sd: 0.05
+    demand_noise_sd: 0.10
+  promo:
+    test_weeks: 52               # real-data promotion model: last 52 weeks held out

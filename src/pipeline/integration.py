@@ -14,8 +14,13 @@ from src.pipeline.mapping import get_mapping
 from src.pricing.config import load_config, resolve_path
 
 
-def build_master_table(forecast, reputation, products, mapping, required_columns):
-    """Return a LoadResult with the merged table and a list of warnings."""
+def build_master_table(forecast, reputation, products, mapping, required_columns,
+                       sales=None, recent_weeks=12):
+    """Return a LoadResult with the merged table and a list of warnings.
+
+    If ``sales`` (Agent 1's weekly history) is given, we also compute ``demand_index`` =
+    forecast demand / average demand of the last ``recent_weeks`` weeks of the same family.
+    An index above 1 means "demand is expected to be stronger than recently"."""
     warnings = []
 
     # 1) products + mapping -> every product gets a category and a reputation name
@@ -28,6 +33,17 @@ def build_master_table(forecast, reputation, products, mapping, required_columns
     if master["demand_pred_family"].isna().any():
         raise DataValidationError("integration: some products have no demand forecast.")
     master["demand_pred"] = master["demand_pred_family"] / master["n_products_in_category"]
+
+    master["demand_index"] = 1.0
+    if sales is not None and len(sales):
+        cutoff = sales["week"].max() - pd.Timedelta(weeks=recent_weeks)
+        recent = sales[sales["week"] > cutoff].groupby("product_id")["sales"].mean()
+        index = master["demand_pred_family"] / master["category"].map(recent)
+        index = index.replace([float("inf"), float("-inf")], float("nan"))
+        n_bad = int(index.isna().sum())
+        if n_bad:
+            warnings.append(f"integration: demand_index unavailable for {n_bad} rows (set to 1.0).")
+        master["demand_index"] = index.fillna(1.0)
 
     # 3) add reputation (joined through the mapping, by name)
     rep_cols = [c for c in ["product_name", "reputation_score", "n_reviews", "low_confidence",
@@ -42,7 +58,7 @@ def build_master_table(forecast, reputation, products, mapping, required_columns
         warnings.append(f"integration: {n_missing} products have no reputation; filled with the "
                         f"median ({median:.3f}) and flagged reputation_available=False.")
     if "low_confidence" in master.columns:
-        master["low_confidence"] = master["low_confidence"].fillna(False).astype(bool)
+        master["low_confidence"] = master["low_confidence"].astype("boolean").fillna(False).astype(bool)
 
     # 4) simple derived columns used later as explanations / controls
     master["price_ratio"] = master["price_current"] / master["competitor_price"]
@@ -73,7 +89,9 @@ def run_integration(cfg=None, rebuild_mapping=False, save=True):
     all_warnings.append(msg)
 
     result = build_master_table(inputs["forecast"].data, inputs["reputation"].data,
-                                inputs["products"].data, mapping, cfg["schema"]["master"])
+                                inputs["products"].data, mapping, cfg["schema"]["master"],
+                                sales=inputs["sales"].data,
+                                recent_weeks=cfg.get("optimizer", {}).get("demand_index_weeks", 12))
     all_warnings += result.warnings
 
     if save:
