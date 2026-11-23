@@ -8,6 +8,7 @@ paths:
   products_file:   data/processed/pricing_dataset.csv     # prices + costs (source to confirm)
   sales_file:      outputs/sales_weekly.csv               # Agent 1 weekly history
   mapping_file:    data/processed/product_mapping.csv     # created in Phase 2
+  master_file:     data/processed/master_table.csv        # merged table (Phase 2)
   recommendations_file: data/processed/recommended_prices.csv
   reports_dir:     reports
 
@@ -17,6 +18,7 @@ schema:
   reputation: [product_name, reputation_score]
   products:   [product_id, price_current, cost, competitor_price]
   sales:      [product_id, week, sales]
+  master:     [product_id, category, week, demand_pred, price_current, cost, competitor_price, reputation_score]
 
 # Renaming applied when reading pricing_dataset.csv (its names differ from the project spec).
 rename:
@@ -34,3 +36,10 @@ constraints:
   price_ceiling_pct_of_current: 1.20
   max_change_per_update_pct: 0.10
   default_cost_ratio: null      # if a cost is missing: null = do not recommend a price
+
+# Phase 2 - product mapping. The three datasets describe different businesses, so the links
+# between them are CONSTRUCTED (synthetic), not real. The result is saved in product_mapping.csv:
+# edit or replace that file when real links exist and the code will use it as-is.
+mapping:
+  seed: 42                      # makes the reputation assignment reproducible
+  type_label: synthetic         # written in the mapping file so nobody mistakes it for real data
