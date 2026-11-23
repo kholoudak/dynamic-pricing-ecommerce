@@ -12,3 +12,10 @@ pyyaml>=6.0
 joblib>=1.3
 jupyter>=1.0
 pytest>=8.0
+
+# Agent 3 - pricing engine, API and dashboard
+statsmodels>=0.14
+fastapi>=0.110
+uvicorn>=0.29
+streamlit>=1.33
+requests>=2.31

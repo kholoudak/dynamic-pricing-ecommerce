@@ -1,0 +1,36 @@
+# Agent 3 configuration - dynamic pricing engine.
+# Kept separate from config.yaml (Agent 1) so we never edit another agent's file.
+# All paths are relative to the project root. Nothing below is hard-coded in the code.
+
+paths:
+  forecast_file:   outputs/demand_forecast.csv            # Agent 1
+  reputation_file: data/processed/reputation_scores.csv   # Agent 2
+  products_file:   data/processed/pricing_dataset.csv     # prices + costs (source to confirm)
+  sales_file:      outputs/sales_weekly.csv               # Agent 1 weekly history
+  mapping_file:    data/processed/product_mapping.csv     # created in Phase 2
+  recommendations_file: data/processed/recommended_prices.csv
+  reports_dir:     reports
+
+# Column names we expect in each input file (checked against the real files).
+schema:
+  forecast:   [product_id, week, demand_pred]
+  reputation: [product_name, reputation_score]
+  products:   [product_id, price_current, cost, competitor_price]
+  sales:      [product_id, week, sales]
+
+# Renaming applied when reading pricing_dataset.csv (its names differ from the project spec).
+rename:
+  products:
+    current_price: price_current
+    product_cost: cost
+
+validation:
+  min_reviews_reliable: 30      # reputation scores built on fewer reviews are flagged "low confidence"
+
+# Pricing constraints (used from Phase 4 on).
+constraints:
+  min_margin_pct: 0.10          # price must be >= cost * (1 + 0.10)
+  price_floor_pct_of_current: 0.80
+  price_ceiling_pct_of_current: 1.20
+  max_change_per_update_pct: 0.10
+  default_cost_ratio: null      # if a cost is missing: null = do not recommend a price
