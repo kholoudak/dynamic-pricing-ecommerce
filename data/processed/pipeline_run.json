@@ -1,0 +1,49 @@
+{
+  "generated_at": "2026-11-24T21:33:49",
+  "note": "Recommendations come from a model with an ASSUMED elasticity (the data has no prices). Profit and gain figures are simulated estimates, not observed results.",
+  "n_products": 120,
+  "n_weeks": 4,
+  "n_rows": 480,
+  "n_no_recommendation": 0,
+  "assumed_base_elasticity": -3.0,
+  "simulated_weekly_gain": 119235850.89934117,
+  "simulated_weekly_profit_current": 1160776423.0965748,
+  "simulated_gain_pct": 10.272077251643225,
+  "mean_price_change_pct": -0.6880890232129157,
+  "regression": {
+    "simulated_true_elasticity": -1.8,
+    "simulated_estimated_elasticity": -1.7685318762292412,
+    "model_used": "OLS",
+    "holdout_R2_vs_baseline": 0.5888108526072668,
+    "real_data_promo_coefficient": 0.10928332905493167,
+    "real_data_promo_test_R2": -0.05729423263814515
+  },
+  "steps": [
+    {
+      "step": "load + validate + merge inputs -> 480 product-week rows",
+      "seconds": 0.06
+    },
+    {
+      "step": "elasticity regression (validated on simulated data)",
+      "seconds": 2.9
+    },
+    {
+      "step": "optimal prices with constraints",
+      "seconds": 0.11
+    },
+    {
+      "step": "constraint audit passed",
+      "seconds": 0.0
+    }
+  ],
+  "warnings": [
+    "reputation_scores: no 'product_id' column (interface not respected by Agent 2) -> a mapping is needed to join with products.",
+    "reputation_scores: no 'category' column (interface not respected by Agent 2) -> a mapping is needed to join with products.",
+    "reputation_scores: 29/94 products have fewer than 30 reviews (flagged low_confidence).",
+    "sales_weekly: 345 weeks with zero sales (log(sales) needs care).",
+    "mapping: loaded existing file product_mapping.csv (120 rows).",
+    "integration: 26 products have no reputation; filled with the median (0.714) and flagged reputation_available=False.",
+    "integration: saved 480 rows to master_table.csv."
+  ],
+  "duration_seconds": 3.08
+}
