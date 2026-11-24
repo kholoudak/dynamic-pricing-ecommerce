@@ -13,6 +13,7 @@ from datetime import date
 
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Path, Query
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 
 from src.pipeline.loaders import DataValidationError
@@ -126,6 +127,11 @@ def create_app(cfg=None):
             except FileNotFoundError:
                 raise HTTPException(503, "No recommendations available yet. Call POST /refresh first.")
         return app.state.df
+
+    @app.get("/", include_in_schema=False)
+    def root():
+        """Send people who open the bare address to the interactive documentation."""
+        return RedirectResponse("/docs")
 
     @app.get("/price/{product_id}", response_model=PriceResponse, tags=["pricing"],
              summary="Recommended price for one product",

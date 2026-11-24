@@ -98,3 +98,8 @@ def test_openapi_documentation_lists_both_endpoints(client):
     paths = client.get("/openapi.json").json()["paths"]
     assert "/price/{product_id}" in paths and "/refresh" in paths
     assert client.get("/docs").status_code == 200
+
+
+def test_root_redirects_to_the_docs(client):
+    r = client.get("/", follow_redirects=False)
+    assert r.status_code in (302, 307) and r.headers["location"] == "/docs"
