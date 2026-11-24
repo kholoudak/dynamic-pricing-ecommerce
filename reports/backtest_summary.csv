@@ -1,0 +1,18 @@
+,value
+label,SIMULATED - no real sales outcomes at different prices
+n_products,120
+n_weeks,4
+assumed_base_elasticity,-3.0
+A_matched_gain_pct,10.272077251643227
+B_grid,"[{'true_elasticity': -1.5, 'gain_pct': 12.248348713133764, 'share_products_gaining_pct': 44.166666666666664, 'top_share_of_net_gain_pct': 145.09248980906435, 'gain_excluding_top_pct': -8.87390950291719}, {'true_elasticity': -2.0, 'gain_pct': 10.6719467531839, 'share_products_gaining_pct': 44.166666666666664, 'top_share_of_net_gain_pct': 130.35968104255517, 'gain_excluding_top_pct': -5.115345756418692}, {'true_elasticity': -3.0, 'gain_pct': 9.065244964253285, 'share_products_gaining_pct': 81.66666666666667, 'top_share_of_net_gain_pct': 86.58448973300216, 'gain_excluding_top_pct': 2.352932051655465}, {'true_elasticity': -4.0, 'gain_pct': 9.522357999778897, 'share_products_gaining_pct': 71.66666666666667, 'top_share_of_net_gain_pct': 88.56782142698111, 'gain_excluding_top_pct': 1.9293244536853054}, {'true_elasticity': -5.0, 'gain_pct': 12.10343493428713, 'share_products_gaining_pct': 60.83333333333333, 'top_share_of_net_gain_pct': 117.72789657946494, 'gain_excluding_top_pct': -3.6900639021368877}]"
+C_noisy.mean_gain_pct,11.453443215365764
+C_noisy.p5_gain_pct,6.007513743525278
+C_noisy.p95_gain_pct,17.5592797862894
+C_noisy.share_runs_positive_pct,100.0
+C_noisy.mean_share_products_gaining_pct,71.625
+price_statistics.avg_price_static,177.7073333333333
+price_statistics.avg_price_dynamic,178.41774999999998
+price_statistics.avg_price_change_pct,-0.6880890232129155
+price_statistics.mean_abs_weekly_change_pct,3.8308942983375656
+price_statistics.price_cv_within_product_pct,2.8385669963241935
+price_statistics.static_price_variation_pct,0.0

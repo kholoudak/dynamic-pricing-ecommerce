@@ -1,0 +1,121 @@
+{
+  "elasticity_model": {
+    "type": "SIMULATED data (known true elasticity) - validates the method only",
+    "true_elasticity": -1.8,
+    "estimated_elasticity": -1.7685318762292412,
+    "model_used": "OLS",
+    "ridge_alpha": null,
+    "coefficients": {
+      "log_price_rel": -1.7685318762292412,
+      "log_comp_rel": 0.5689078908510089,
+      "reputation_score": 0.5015755529943262,
+      "log_baseline_demand": 1.0003807306356236
+    },
+    "p_values": {
+      "log_price_rel": 0.0,
+      "log_comp_rel": 6.633464628537714e-206,
+      "reputation_score": 0.0,
+      "log_baseline_demand": 0.0
+    },
+    "confidence_intervals_95": {
+      "log_price_rel": [
+        -1.7995964069218189,
+        -1.7374673455366636
+      ],
+      "log_comp_rel": [
+        0.5331718043606286,
+        0.6046439773413892
+      ],
+      "reputation_score": [
+        0.47951145595914246,
+        0.52363965002951
+      ],
+      "log_baseline_demand": [
+        0.9996690048601218,
+        1.0010924564111254
+      ]
+    },
+    "vif": {
+      "log_price_rel": 1.9328286790597928,
+      "log_comp_rel": 1.9328286790597928,
+      "reputation_score": 1.017955473156445,
+      "log_baseline_demand": 1.0179554731564446
+    },
+    "train_weeks": 73,
+    "test_weeks": 31,
+    "holdout_metrics": {
+      "R2_vs_baseline": 0.5888108526072668,
+      "R2_log": 0.9983758526745393,
+      "MAE_log": 0.0810785737175623,
+      "RMSE_log": 0.10171128552785898,
+      "MAE_demand": 3426.7310994960644,
+      "RMSE_demand": 9557.99107751576
+    },
+    "baseline_no_price_metrics": {
+      "R2_log": 0.9960501018199633,
+      "MAE_log": 0.1268272791024075,
+      "RMSE_log": 0.15861687269516322,
+      "MAE_demand": 5447.685752812366,
+      "RMSE_demand": 15325.774691358927
+    },
+    "cv_folds": [
+      {
+        "fold": 1,
+        "train_weeks": 24,
+        "test_weeks": 20,
+        "R2_vs_baseline": 0.5770751592015344,
+        "R2_log": 0.9982317960908433,
+        "MAE_log": 0.08516916840535636,
+        "RMSE_log": 0.10599661841441056,
+        "MAE_demand": 3664.1447055775907,
+        "RMSE_demand": 10653.926420393533
+      },
+      {
+        "fold": 2,
+        "train_weeks": 44,
+        "test_weeks": 20,
+        "R2_vs_baseline": 0.5878793392602204,
+        "R2_log": 0.9983912814574937,
+        "MAE_log": 0.08058561018427386,
+        "RMSE_log": 0.10122824938135233,
+        "MAE_demand": 3701.960573566704,
+        "RMSE_demand": 11222.680840786952
+      },
+      {
+        "fold": 3,
+        "train_weeks": 64,
+        "test_weeks": 20,
+        "R2_vs_baseline": 0.6027099988175344,
+        "R2_log": 0.9984292534374323,
+        "MAE_log": 0.07993252149952136,
+        "RMSE_log": 0.1000709458172007,
+        "MAE_demand": 3455.5793573285605,
+        "RMSE_demand": 9548.371110506912
+      },
+      {
+        "fold": 4,
+        "train_weeks": 84,
+        "test_weeks": 20,
+        "R2_vs_baseline": 0.5907038674490468,
+        "R2_log": 0.9983613224039094,
+        "MAE_log": 0.08135960465391927,
+        "RMSE_log": 0.10217951638234388,
+        "MAE_demand": 3427.61238901534,
+        "RMSE_demand": 9734.807329858144
+      }
+    ],
+    "notes": [
+      "max VIF = 1.93 (threshold 10) -> plain OLS used."
+    ]
+  },
+  "promotion_model": {
+    "type": "REAL data - promotion effect (NOT a price elasticity)",
+    "promo_coefficient": 0.10928332905493167,
+    "promo_p_value": 6.235590488843534e-211,
+    "n_train": 4986,
+    "n_test": 1620,
+    "test_R2_log": -0.05729423263814515,
+    "test_MAE_log": 0.3708220301334996,
+    "test_MAE_log_if_no_model": 0.41778477785445317
+  }
+}

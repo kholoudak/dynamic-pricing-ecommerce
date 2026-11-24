@@ -76,3 +76,11 @@ regression:
     demand_noise_sd: 0.10
   promo:
     test_weeks: 52               # real-data promotion model: last 52 weeks held out
+
+# Phase 5 - backtest (SIMULATED: no real sales at different prices exist in the data)
+backtest:
+  seed: 42
+  true_elasticity_grid: [-1.5, -2.0, -3.0, -4.0, -5.0]   # "what if the real elasticity is different?"
+  noise_sd: 0.3                    # product-level error on the assumed elasticity (log-normal)
+  n_runs: 200                      # Monte Carlo repetitions
+  figures_dir: reports/figures

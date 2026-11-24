@@ -133,7 +133,8 @@ def optimal_price(product_data, cfg=None, last_price=None):
         raise ValueError(f"product {get('product_id')}: price_current must be a positive number.")
     d0 = _num(get("demand_pred"))
     flags = []
-    out = {"product_id": get("product_id"), "price_current": p0, "base_elasticity": opt["base_elasticity"]}
+    out = {"product_id": get("product_id"), "price_current": p0, "cost": None,
+           "base_elasticity": opt["base_elasticity"]}
 
     def no_rec(reason):
         out.update(price_recommended=p0, demand_current=d0, demand_recommended=d0, profit_current=None,
@@ -147,6 +148,7 @@ def optimal_price(product_data, cfg=None, last_price=None):
     cost, cost_flag = resolve_cost(p0, _num(get("cost")), rules)
     if cost_flag:
         flags.append(cost_flag)
+    out["cost"] = cost
     if cost is None:
         return no_rec("missing_or_invalid_cost")
     if d0 is None or d0 < 0:
