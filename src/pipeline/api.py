@@ -34,12 +34,14 @@ estimates**, not observed results.
 # ----------------------------- response models (what the API returns) -----------------------------
 
 class WeekPrice(BaseModel):
+    """Recommended price of one forecast week."""
     week: date = Field(description="Forecast week (Monday)")
     price_recommended: float
     price_change_pct: float = Field(description="Change versus the CURRENT price, in %")
 
 
 class PriceResponse(BaseModel):
+    """Everything the API returns for one product."""
     product_id: str
     category: str | None = Field(None, description="Product family used to link the product to Agent 1's forecast")
     week: date = Field(description="Week this recommendation applies to")
@@ -67,11 +69,13 @@ class PriceResponse(BaseModel):
 
 
 class RefreshRequest(BaseModel):
+    """Optional settings for POST /refresh."""
     rebuild_mapping: bool = Field(False, description="Rebuild product_mapping.csv instead of re-using it")
     run_regression: bool = Field(True, description="Also re-run the elasticity validation (about 3 s)")
 
 
 class RefreshResponse(BaseModel):
+    """Summary returned after a successful refresh."""
     status: str
     generated_at: str
     n_products: int
@@ -121,6 +125,7 @@ def create_app(cfg=None):
     app.state.lock = threading.Lock()          # only one refresh at a time
 
     def recommendations():
+        """Return the recommendations table, loading it from disk on first use."""
         if app.state.df is None:
             try:
                 app.state.df = load_recommendations(cfg)

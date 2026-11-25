@@ -44,6 +44,7 @@ class PipelineError(Exception):
 
 @dataclass
 class PipelineResult:
+    """Output of one pipeline run: recommendations table, run details and warnings."""
     recommendations: pd.DataFrame
     metadata: dict
     warnings: list = field(default_factory=list)
@@ -103,6 +104,7 @@ def run_pipeline(cfg=None, rebuild_mapping=False, run_regression=True, save=True
     warnings, steps = [], []
 
     def step(name, t0):
+        """Record how long a pipeline step took and report it."""
         steps.append({"step": name, "seconds": round(time.time() - t0, 2)})
         log(f"[ok] {name} ({steps[-1]['seconds']}s)")
 

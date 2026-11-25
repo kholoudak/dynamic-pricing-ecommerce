@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-24T21:33:49",
+  "generated_at": "2026-11-25T12:18:30",
   "note": "Recommendations come from a model with an ASSUMED elasticity (the data has no prices). Profit and gain figures are simulated estimates, not observed results.",
   "n_products": 120,
   "n_weeks": 4,
@@ -21,11 +21,11 @@
   "steps": [
     {
       "step": "load + validate + merge inputs -> 480 product-week rows",
-      "seconds": 0.06
+      "seconds": 0.15
     },
     {
       "step": "elasticity regression (validated on simulated data)",
-      "seconds": 2.9
+      "seconds": 15.84
     },
     {
       "step": "optimal prices with constraints",
@@ -45,5 +45,5 @@
     "integration: 26 products have no reputation; filled with the median (0.714) and flagged reputation_available=False.",
     "integration: saved 480 rows to master_table.csv."
   ],
-  "duration_seconds": 3.08
+  "duration_seconds": 16.11
 }

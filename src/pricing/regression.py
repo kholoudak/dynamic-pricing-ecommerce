@@ -101,6 +101,7 @@ class LinearFit:
     conf_int: dict = field(default_factory=dict)
 
     def predict_log(self, X):
+        """Predicted log(demand) for a table of features."""
         return self.intercept + sum(self.coef[c] * X[c] for c in self.coef)
 
 
@@ -219,6 +220,7 @@ def fit_promo_effect(sales, test_weeks=52):
     mu = train.groupby("product_id")[cols].mean().add_suffix("_mu")
 
     def centre(df):
+        """Subtract each family's TRAIN average (removes family-level differences)."""
         j = df[["product_id"]].join(mu, on="product_id")
         return pd.DataFrame({c: df[c] - j[c + "_mu"] for c in cols}, index=df.index).dropna()
 

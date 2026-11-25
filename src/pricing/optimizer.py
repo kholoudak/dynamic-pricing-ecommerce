@@ -72,10 +72,14 @@ def expected_profit(price, cost, price_current, demand_current, elasticity):
 
 
 def _binding(best, bounds):
-    """Name the constraint that limits the chosen price (None if the optimum is inside the interval)."""
-    if abs(best - bounds["hi"]) < 0.0051 and bounds["hi"] > bounds["lo"]:
+    """Name the constraint that limits the chosen price (None if the optimum is inside the interval).
+
+    Prices are rounded to whole cents INSIDE the bounds, so a price on a bound can sit up to one
+    cent away from the exact bound; the tolerance is therefore one cent."""
+    tolerance = 0.0101
+    if abs(best - bounds["hi"]) < tolerance and bounds["hi"] > bounds["lo"]:
         return bounds["hi_source"]
-    if abs(best - bounds["lo"]) < 0.0051 and bounds["hi"] > bounds["lo"]:
+    if abs(best - bounds["lo"]) < tolerance and bounds["hi"] > bounds["lo"]:
         return bounds["lo_source"]
     return None
 
@@ -137,6 +141,7 @@ def optimal_price(product_data, cfg=None, last_price=None):
            "base_elasticity": opt["base_elasticity"]}
 
     def no_rec(reason):
+        """Return a result that keeps the current price (used when no safe recommendation exists)."""
         out.update(price_recommended=p0, demand_current=d0, demand_recommended=d0, profit_current=None,
                    profit_recommended=None, margin_gain=0.0, margin_pct_current=None,
                    margin_pct_recommended=None, price_change_pct=0.0, elasticity_used=None,

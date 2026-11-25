@@ -63,6 +63,13 @@ def test_constraints_are_respected():
     assert r["binding_constraint"] == "max_change_per_update"
 
 
+def test_binding_constraint_detected_when_bound_is_not_a_whole_cent():
+    # +10% of 263.08 is 289.388 -> the price is rounded DOWN to 289.38, still limited by the rule
+    r = optimal_price(product(price_current=263.08, cost=230.0, competitor_price=263.08), CFG)
+    assert r["price_recommended"] == pytest.approx(289.38)
+    assert r["binding_constraint"] == "max_change_per_update"
+
+
 def test_min_margin_respected_even_if_price_is_too_low():
     r = optimal_price(product(cost=98.0), CFG)               # current margin ~2% < required 10%
     assert r["price_recommended"] >= 98.0 * 1.10 - 1e-9

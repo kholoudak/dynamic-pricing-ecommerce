@@ -92,6 +92,7 @@ def fmt_big(x):
 # --------------------------------------------------------------------------------------
 
 def chart_price_scatter(f):
+    """Scatter of current vs recommended price (log axes) with the no-change diagonal."""
     lo = float(min(f["price_current"].min(), f["price_recommended"].min()))
     hi = float(max(f["price_current"].max(), f["price_recommended"].max()))
     log = alt.Scale(type="log", domain=[lo * 0.9, hi * 1.1])      # axes follow the data, not 1..300
@@ -106,12 +107,14 @@ def chart_price_scatter(f):
 
 
 def chart_change_histogram(f):
+    """Histogram of the recommended price changes."""
     return alt.Chart(f).mark_bar(color="#457b9d").encode(
         x=alt.X("price_change_pct:Q", bin=alt.Bin(maxbins=30), title="Recommended price vs current (%)"),
         y=alt.Y("count():Q", title="Products")).properties(height=320)
 
 
 def chart_margin_by_category(cs):
+    """Grouped bars: average margin before and after, per category."""
     long = cs.melt(id_vars="category", value_vars=["margin_current", "margin_recommended"],
                    var_name="series", value_name="margin")
     long["series"] = long["series"].map({"margin_current": "Current", "margin_recommended": "Recommended"})
@@ -125,6 +128,7 @@ def chart_margin_by_category(cs):
 
 
 def chart_gain_by_category(cs):
+    """Bars: simulated profit gain per category."""
     return alt.Chart(cs).mark_bar().encode(
         y=alt.Y("category:N", sort="-x", title=None),
         x=alt.X("gain_pct:Q", title="Simulated profit gain (%)"),
@@ -134,6 +138,7 @@ def chart_gain_by_category(cs):
 
 
 def chart_reputation(f):
+    """Scatter of reputation score vs recommended price change."""
     rep = f[f["reputation_available"]]
     return alt.Chart(rep).mark_circle(size=60, opacity=0.7, color="#e9c46a").encode(
         x=alt.X("reputation_score:Q", scale=alt.Scale(zero=False), title="Reputation score (Agent 2)"),
@@ -146,6 +151,7 @@ def chart_reputation(f):
 # --------------------------------------------------------------------------------------
 
 def render_overview(f):
+    """Overview tab: KPI cards and charts for the filtered products."""
     k = compute_kpis(f)
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Products analyzed", k["n_products"])
@@ -190,6 +196,7 @@ def render_overview(f):
 
 
 def render_product(df_all, f):
+    """Product tab: one product before and after, with the reasoning."""
     st.subheader("One product, before and after")
     products = f.groupby("product_id").agg(category=("category", "first"), gain=("margin_gain", "sum")).reset_index()
     if products.empty:
@@ -240,6 +247,7 @@ def render_product(df_all, f):
 
 
 def render_table(f):
+    """Table tab: all filtered recommendations with a CSV download."""
     st.subheader("All recommendations (filtered)")
     cols = ["product_id", "category", "week", "price_current", "price_recommended", "price_change_pct",
             "demand_current", "demand_recommended", "profit_current", "profit_recommended", "margin_gain",
@@ -251,6 +259,7 @@ def render_table(f):
 
 
 def render_evidence(cfg, info):
+    """Evidence tab: assumptions, regression summary, backtest and data-quality notes."""
     st.subheader("What this model can and cannot tell us")
     st.markdown(
         "- **Demand** comes from Agent 1's LSTM forecast; **reputation** from Agent 2's Transformer.\n"
@@ -289,11 +298,13 @@ def render_evidence(cfg, info):
 
 @st.cache_data(show_spinner=False)
 def load_data():
+    """Read the exported recommendations once (cached until the next refresh)."""
     cfg = load_config()
     return load_recommendations(cfg), load_run_info(cfg)
 
 
 def main():
+    """Build the page."""
     st.set_page_config(page_title="Dynamic Pricing Dashboard", layout="wide")
     cfg = load_config()
     st.title("Dynamic Pricing & Competition in E-Commerce")
