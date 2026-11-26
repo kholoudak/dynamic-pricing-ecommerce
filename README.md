@@ -1,145 +1,244 @@
-# Dynamic Pricing & Competition in E-Commerce — Agent 1 : prévision de la demande (LSTM)
+# Dynamic Pricing & Competition in E-Commerce
 
-Projet universitaire n°8. L'**Agent 1** prévoit la demande hebdomadaire de chaque produit, 1 à 4 semaines à l'avance, avec un réseau LSTM (TensorFlow/Keras). Sa prévision est transmise à l'**Agent 3** (optimisation des prix) dans le fichier `outputs/demand_forecast.csv`.
+Projet universitaire n°8 — Intelligent pricing and demand forecasting using machine learning.
 
-| Agent | Rôle | Technique |
+This project is composed of multiple agents working together to analyze product demand, reputation, and pricing decisions in an e-commerce environment.
+
+## Agents Overview
+
+| Agent | Role | Technique |
 |---|---|---|
-| **Agent 1 (ce dépôt)** | Prévision de la demande hebdomadaire | LSTM |
-| Agent 2 | Réputation à partir des avis | Transformer |
-| Agent 3 | Prix optimal, intégration, démo | Régression linéaire |
+| Agent 1 | Weekly demand forecasting | LSTM |
+| Agent 2 | Reputation analysis from reviews | Transformer |
+| Agent 3 | Dynamic pricing and price optimization | Linear Regression |
 
-Documents associés : `RAPPORT_AGENT1.md` (section du rapport technique), `CONTRACT.md` (contrat d'intégration entre agents).
+---
 
-## Résultats en bref
+# Agent 1 — Demand Forecasting (LSTM)
 
-Erreur en % (WAPE, plus bas = mieux), 32 produits, 4 horizons regroupés.
+Agent 1 predicts weekly demand for each product category, 1 to 4 weeks ahead, using an LSTM neural network (TensorFlow/Keras).
 
-| Modèle | Validation | Test (évalué une seule fois) |
-|---|---|---|
-| Ensemble de 5 LSTM | 8,77 | 7,01 |
-| Hybride (0,5 × LSTM + 0,5 × saisonnier naïf) | 7,32 (diagnostic) | 8,63 |
-| Naïf (dernière semaine) | 11,42 | 7,95 |
-| Moyenne mobile (4 semaines) | 10,00 | **6,20** |
-| Saisonnier naïf (même semaine l'an passé) | 8,48 | 12,66 |
+Its predictions are transmitted to Agent 3 through the integration file:
 
-Le LSTM bat le modèle naïf sur les deux périodes, mais **la moyenne mobile fait mieux sur le test** : les écarts d'environ un point ne sont pas concluants (un seul test de 26 semaines). Détails et limites : `RAPPORT_AGENT1.md`.
+`outputs/demand_forecast.csv`
 
-## Structure du projet
+## Technologies
 
+- Python
+- TensorFlow / Keras
+- NumPy
+- Pandas
+- Scikit-learn
+
+## Dependencies
+
+Install the required packages:
+
+```bash
+pip install -r requirements.txt
 ```
+
+## Results
+
+Error percentage (WAPE, lower is better), 32 product categories, 4 forecast horizons combined.
+
+| Model | Validation | Test |
+|---|---:|---:|
+| Ensemble of 5 LSTMs | 8.77% | 7.01% |
+| Hybrid (0.5 LSTM + 0.5 seasonal naive) | 7.32% | 8.63% |
+| Naive (last week) | 11.42% | 7.95% |
+| Moving average (4 weeks) | 10.00% | **6.20%** |
+| Seasonal naive (same week last year) | 8.48% | 12.66% |
+
+The LSTM outperforms the naive model on both periods. However, the moving average performs better on the test set. The differences are relatively small and should be interpreted cautiously because the evaluation uses a single 26-week test period.
+
+Detailed results and limitations are available in `RAPPORT_AGENT1.md`.
+
+## Project Structure
+
+```text
 dynamic-pricing-ecommerce/
-├── config.yaml              # tous les paramètres (chemins, fenêtre, réseau, graine...)
+│
+├── config.yaml
 ├── requirements.txt
+├── README.md
+├── README_PRICING.md
+├── CONTRACT.md
+├── RAPPORT_AGENT1.md
+│
 ├── data/
-│   ├── raw/                 # CSV Kaggle (NON fournis dans le dépôt)
-│   └── processed/           # variables, séquences (générés)
-├── notebooks/               # 01 exploration, 02 nettoyage, 03 entraînement/résultats
-├── models/                  # 5 réseaux .keras, model_meta*.json, ensemble_meta.json, feature_scaler.json
-├── outputs/                 # demand_forecast.csv, évaluations (json/csv), graphiques
-├── src/forecast/            # code du pipeline (un module par étape)
-└── tests/                   # tests unitaires (pytest)
+│   ├── raw/
+│   │   └── Kaggle datasets
+│   └── processed/
+│       └── processed data and sequences
+│
+├── notebooks/
+│   ├── 01_exploration
+│   ├── 02_cleaning
+│   └── 03_training_and_results
+│
+├── models/
+│   ├── LSTM models
+│   ├── model metadata
+│   ├── ensemble metadata
+│   └── feature scaler
+│
+├── outputs/
+│   ├── demand_forecast.csv
+│   ├── evaluations
+│   └── graphs
+│
+├── src/
+│   └── forecast/
+│       ├── data_loader.py
+│       ├── preprocessing.py
+│       ├── feature_engineering.py
+│       ├── sequence_generator.py
+│       ├── model.py
+│       ├── train.py
+│       ├── evaluate.py
+│       ├── experiments.py
+│       ├── ensemble.py
+│       ├── predict.py
+│       ├── export_forecast.py
+│       └── final_evaluation.py
+│
+└── tests/
+    └── unit tests
 ```
 
-Modules de `src/forecast/` : `data_loader`, `preprocessing`, `feature_engineering`, `sequence_generator`, `model`, `train`, `evaluate`, `experiments`, `ensemble`, `predict`, `export_forecast`, `final_evaluation`.
+## Installation — Windows 11
 
-## Installation (Windows 11, PowerShell, CPU)
+Using PowerShell:
 
 ```powershell
+git clone https://github.com/kholoudak/dynamic-pricing-ecommerce.git
+
 cd dynamic-pricing-ecommerce
+
 python -m venv .venv
+
 .\.venv\Scripts\Activate.ps1
+
 pip install --default-timeout=120 --retries 10 -r requirements.txt
 ```
 
-Version testée : Python 3.13.5, TensorFlow 2.21.0. `requirements.txt` ne fixe que des versions minimales. Pour figer votre environnement : `pip freeze > requirements-lock.txt`.
+Version tested: Python 3.13.5, TensorFlow 2.21.0.
 
-## Données
+The requirements file specifies minimum versions. To save your exact environment:
 
-Jeu de données Kaggle **« Store Sales - Time Series Forecasting »** (Favorita). Télécharger les fichiers et les placer dans `data/raw/` : `train.csv`, `holidays_events.csv` (utilisés par le modèle), `stores.csv`, `oil.csv`, `transactions.csv` (explorés seulement).
-
-Choix importants : `product_id` = colonne `family` (une **catégorie** de produits, pas un produit individuel) ; les ventes sont additionnées sur les 54 magasins ; il n'y a **pas de colonne prix**.
-
-## Exécution du pipeline (dans l'ordre)
-
-```powershell
-python -m src.forecast.preprocessing        # étape 4 : nettoyage + agrégation hebdomadaire
-python -m src.forecast.sequence_generator   # étape 5 : variables, mise à l'échelle, fenêtres
-python -m src.forecast.train                # étape 6 : modèle principal (graine 42)
-python -m src.forecast.evaluate --split val # étape 7 : comparaison aux références (validation)
-python -m src.forecast.ensemble             # étape 6d : 5 réseaux, validation seulement
-python -m src.forecast.export_forecast      # étape 9 : écrit et valide demand_forecast.csv
-python -m src.forecast.final_evaluation --final   # UNE SEULE FOIS : évaluation sur le test
+```bash
+pip freeze > requirements-lock.txt
 ```
 
-Optionnel : `python -m src.forecast.experiments` (comparaison des variantes sur la validation).
+## Dataset
 
-**Attention** : ne relancez pas `sequence_generator` sur de nouvelles données sans réentraîner les réseaux, car il réécrit `models/feature_scaler.json` et recalcule les dates de découpage. Le jeu de test n'est utilisé que par `final_evaluation`, qui refuse de s'exécuter une seconde fois.
+Agent 1 uses the Kaggle dataset:
 
-## Utiliser la prévision
+**Store Sales — Time Series Forecasting (Favorita)**
 
-Depuis Python (charge les 5 réseaux, ce qui demande TensorFlow) :
+The following files should be placed inside `data/raw/`:
+
+- `train.csv`
+- `holidays_events.csv`
+- `stores.csv`
+- `oil.csv`
+- `transactions.csv`
+
+The model uses `train.csv` and `holidays_events.csv`. The other files are used for exploration.
+
+Important dataset characteristics:
+
+- `product_id` corresponds to the product family/category, not an individual SKU.
+- Sales are aggregated across the 54 stores.
+- The dataset does not contain a product price column.
+
+## Agent 1 — Pipeline Execution
+
+Execute the pipeline in the following order:
+
+```powershell
+python -m src.forecast.preprocessing
+
+python -m src.forecast.sequence_generator
+
+python -m src.forecast.train
+
+python -m src.forecast.evaluate --split val
+
+python -m src.forecast.ensemble
+
+python -m src.forecast.export_forecast
+
+python -m src.forecast.final_evaluation --final
+```
+
+### Pipeline steps
+
+| Step | Module | Description |
+|---|---|---|
+| 1 | `preprocessing` | Cleaning and weekly aggregation |
+| 2 | `sequence_generator` | Feature engineering, scaling and sequence generation |
+| 3 | `train` | Training the main LSTM |
+| 4 | `evaluate` | Evaluation and comparison with baseline models |
+| 5 | `ensemble` | Training and combining 5 LSTM models |
+| 6 | `export_forecast` | Exporting demand predictions |
+| 7 | `final_evaluation` | Final test evaluation |
+
+Optional experiments:
+
+```powershell
+python -m src.forecast.experiments
+```
+
+**Important:** Do not run `sequence_generator` on new data without retraining the models, because it rewrites `models/feature_scaler.json` and recalculates the data split dates.
+
+The test dataset should only be used for final evaluation.
+
+## Using the Demand Forecast
+
+From Python:
 
 ```python
 from src.forecast.predict import predict_demand
 
-predict_demand("GROCERY I", 1)             # semaine suivante, en unités
-predict_demand("GROCERY I", "2017-08-21")  # ou n'importe quelle date de la semaine voulue
+# Forecast demand for the next week
+predict_demand("GROCERY I", 1)
+
+# Forecast demand for a specific date
+predict_demand("GROCERY I", "2017-08-21")
 ```
 
-`week` = 1 à 4 (semaines après la dernière semaine des données) ou une date. Une erreur `ValueError` explicite est levée pour un produit inconnu ou une semaine hors plage.
+The forecast horizon can be:
 
-En ligne de commande :
+- Week 1 to 4 after the last observed week.
+- A date corresponding to the desired forecast week.
+
+An explicit `ValueError` is raised for an unknown product or invalid forecast horizon.
+
+From the command line:
 
 ```powershell
-python -m src.forecast.predict                                  # tableau de tous les produits
+python -m src.forecast.predict
+```
+
+Forecast a specific product:
+
+```powershell
 python -m src.forecast.predict --product "GROCERY I" --week 1
 ```
 
-## Fichier d'intégration pour l'Agent 3
+## Integration with Agent 3
 
-`outputs/demand_forecast.csv` : une ligne par (produit, semaine), 32 × 4 = 128 lignes.
+Agent 1 exports the predictions to:
 
-| Colonne | Type | Signification |
+`outputs/demand_forecast.csv`
+
+The file contains one row per product and forecast week, for a total of 32 × 4 = 128 rows.
+
+| Column | Type | Description |
 |---|---|---|
-| `product_id` | texte | famille de produits (ex. `GROCERY I`) |
-| `week` | date `AAAA-MM-JJ` | **lundi** de la semaine prévue |
-| `demand_pred` | nombre ≥ 0 | unités vendues par semaine, tous magasins |
-| `horizon` | entier 1 à 4 | semaines après la dernière semaine observée |
-
-Vérification : `python -m src.forecast.export_forecast --check`. Le contrat complet (validation, versions, questions ouvertes) est dans `CONTRACT.md`.
-
-## Configuration
-
-Tout se règle dans `config.yaml`. Bloc optionnel qui choisit le modèle livré dans `demand_forecast.csv` :
-
-```yaml
-prediction:
-  use_ensemble: true      # moyenne des 5 réseaux (models/ensemble_meta.json)
-  seasonal_weight: 0.5    # 0.0 = LSTM pur ; 0.5 = hybride (valeur par défaut si le bloc est absent)
-```
-
-Après modification, relancer `python -m src.forecast.export_forecast`.
-
-## Tests
-
-```powershell
-python -m pytest tests -q        # 94 tests
-```
-
-Les tests utilisent des données synthétiques : ils ne lisent ni le jeu Kaggle ni le jeu de test.
-
-## Reproductibilité
-
-Graine 42 (réseaux de l'ensemble : graines 42 à 46), exécution déterministe sur CPU. Un autre ordinateur ou une autre version de TensorFlow peut donner des chiffres légèrement différents.
-
-## Limites connues
-
-- Pas de colonne prix dans les données : la prévision ne dépend pas du prix.
-- Granularité = famille de produits (32), pas de SKU. La clé commune avec les Agents 2 et 3 reste à définir (voir `CONTRACT.md`, question Q1).
-- Un seul jeu de test de 26 semaines ; forte variabilité entre graines (WAPE de validation de 8,05 % à 10,64 % selon la graine).
-- Les réseaux sont entraînés jusqu'à environ août 2016 et ne sont pas réentraînés sur la validation et le test.
-- Pas d'intervalle de confiance.
-
-## Modèle livré : décision en attente
-
-Le fichier `demand_forecast.csv` actuel provient de l'**hybride** (`seasonal_weight: 0.5`), choisi sur la validation avant d'ouvrir le test. Sur le test, le LSTM pur (7,01 %) est meilleur que l'hybride (8,63 %). Recommandation : `seasonal_weight: 0.0`, avec mention dans le rapport que ce choix a été fait après avoir vu le test.
+| `product_id` | String | Product family/category |
+| `week` | Date | Monday of the forecast week |
+| `demand_pred` | Number ≥ 0 | Predicted weekly sales across all stores |
+| `horizon` | Integer (1

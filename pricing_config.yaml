@@ -1,0 +1,86 @@
+# Agent 3 configuration - dynamic pricing engine.
+# Kept separate from config.yaml (Agent 1) so we never edit another agent's file.
+# All paths are relative to the project root. Nothing below is hard-coded in the code.
+
+paths:
+  forecast_file:   outputs/demand_forecast.csv            # Agent 1
+  reputation_file: data/processed/reputation_scores.csv   # Agent 2
+  products_file:   data/processed/pricing_dataset.csv     # prices + costs (source to confirm)
+  sales_file:      outputs/sales_weekly.csv               # Agent 1 weekly history
+  mapping_file:    data/processed/product_mapping.csv     # created in Phase 2
+  master_file:     data/processed/master_table.csv        # merged table (Phase 2)
+  recommendations_file: data/processed/recommended_prices.csv
+  reports_dir:     reports
+
+# Column names we expect in each input file (checked against the real files).
+schema:
+  forecast:   [product_id, week, demand_pred]
+  reputation: [product_name, reputation_score]
+  products:   [product_id, price_current, cost, competitor_price]
+  sales:      [product_id, week, sales]
+  master:     [product_id, category, week, demand_pred, price_current, cost, competitor_price, reputation_score]
+
+# Renaming applied when reading pricing_dataset.csv (its names differ from the project spec).
+rename:
+  products:
+    current_price: price_current
+    product_cost: cost
+
+validation:
+  min_reviews_reliable: 30      # reputation scores built on fewer reviews are flagged "low confidence"
+
+# Pricing constraints (Phase 4). Every rule is read from here - nothing is hard-coded in the code.
+constraints:
+  min_margin_pct: 0.10             # price >= cost * (1 + 0.10)
+  floor_pct_of_current: 0.80       # price floor   = 80% of the current price
+  ceiling_pct_of_current: 1.20     # price ceiling = 120% of the current price
+  max_change_per_update_pct: 0.10  # at most +/-10% versus the previous price, per update
+  min_price: 0.01                  # prices can never be zero or negative
+  on_missing_cost: keep_current    # keep_current = do not change the price | use_default_ratio
+  default_cost_ratio: null         # only if on_missing_cost = use_default_ratio: cost = price * ratio
+
+# Phase 4 - optimizer. ALL numbers below are ASSUMPTIONS (the real data has no prices to estimate them).
+optimizer:
+  n_grid: 201                      # number of candidate prices tested between the lower and upper bound
+  base_elasticity: -3.0            # calibrated: -1 / median margin (0.35) ~ -2.9 (Lerner rule)
+  min_abs_elasticity: 1.2          # elasticity is kept between -1.2 and -6 (below -1 a finite optimum exists)
+  max_abs_elasticity: 6.0
+  gap_sensitivity: 1.0             # more elastic when we are pricier than the competitor
+  reputation_sensitivity: 1.0      # less elastic when reputation is above the reference
+  demand_sensitivity: 0.5          # less elastic when forecast demand is above its recent level
+  reputation_reference: 0.714      # median reputation score of Agent 2's 94 products
+  demand_index_weeks: 12           # recent history used to compute the demand index
+
+# Phase 2 - product mapping. The three datasets describe different businesses, so the links
+# between them are CONSTRUCTED (synthetic), not real. The result is saved in product_mapping.csv:
+# edit or replace that file when real links exist and the code will use it as-is.
+mapping:
+  seed: 42                      # makes the reputation assignment reproducible
+  type_label: synthetic         # written in the mapping file so nobody mistakes it for real data
+
+# Phase 3 - regression
+regression:
+  test_fraction: 0.30            # last 30% of the weeks are held out (chronological, never shuffled)
+  n_cv_splits: 4                 # expanding-window temporal cross-validation
+  vif_threshold: 10              # max VIF above this => multicollinearity => use Ridge
+  ridge_alphas: [0.01, 0.1, 1, 10, 100]
+  synthetic:                     # parameters of the SIMULATED price experiment (known truth)
+    seed: 42
+    n_weeks: 104
+    true_elasticity: -1.8
+    true_competitor_effect: 0.6
+    true_reputation_effect: 0.5
+    price_noise_sd: 0.08         # weekly random price changes (+/- 8%)
+    competitor_follow: 0.6       # how strongly the competitor price follows ours (collinearity)
+    competitor_noise_sd: 0.05
+    demand_noise_sd: 0.10
+  promo:
+    test_weeks: 52               # real-data promotion model: last 52 weeks held out
+
+# Phase 5 - backtest (SIMULATED: no real sales at different prices exist in the data)
+backtest:
+  seed: 42
+  true_elasticity_grid: [-1.5, -2.0, -3.0, -4.0, -5.0]   # "what if the real elasticity is different?"
+  noise_sd: 0.3                    # product-level error on the assumed elasticity (log-normal)
+  n_runs: 200                      # Monte Carlo repetitions
+  figures_dir: reports/figures

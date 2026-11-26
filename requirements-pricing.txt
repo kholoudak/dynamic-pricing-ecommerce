@@ -1,0 +1,15 @@
+# Everything Agent 3 needs (pricing engine, API, dashboard, tests).
+# Installs on Python 3.10 - 3.13 without TensorFlow or PyTorch (those are only for Agents 1 and 2).
+#   python -m pip install -r requirements-pricing.txt
+pandas>=2.2
+numpy>=1.26
+scikit-learn>=1.4
+statsmodels>=0.14
+matplotlib>=3.8
+pyyaml>=6.0
+fastapi>=0.110
+uvicorn>=0.29
+httpx>=0.27          # used by the API tests
+streamlit>=1.33
+altair>=5.0          # charts in the dashboard (grouped bars need version 5+)
+pytest>=8.0
